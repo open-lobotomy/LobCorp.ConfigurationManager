@@ -56,8 +56,11 @@ Tests live in `LobCorp.ConfigurationManager.Test` (xunit.v3, Moq, AwesomeAsserti
 
 ## CI/CD
 
-- **CI** (`.github/workflows/ci.yml`) — builds and tests on push to `main` and PRs.
-- **Release** (`.github/workflows/release.yml`) — triggered when a GitHub Release is published. Builds, tests, packages the mod as a zip (matching the `BaseMods/ConfigurationManager/` folder structure), and uploads it as a release asset.
+- **CI** (`.github/workflows/ci.yml`) — calls the pinned reusable Linux and Windows workflows from `open-lobotomy/.github` on pushes to `main` and pull requests. The Linux workflow runs `dotnet ci --check`; the Windows workflow builds and tests `ConfigurationManager.slnx`.
+- **Release** (`.github/workflows/release.yml`) — triggered when a GitHub Release is created. Builds, tests, packages the mod as a zip (matching the `BaseMods/ConfigurationManager/` folder structure), and uploads it as a release asset.
+- The reusable workflows authenticate GitHub Packages with the job's `GITHUB_TOKEN`. The repository's jobs require `packages: read`, and each private package must grant this repository read access under its GitHub Actions package settings. Do not add a personal `PACKAGES_TOKEN` to new workflows.
+- The committed `nuget.config` contains only NuGet.org and the organization GitHub Packages feed. For local package development, copy it to the ignored `nuget.local.config`, add the local source and an exact `packageSourceMapping` entry for each locally developed `LobotomyCorporation.*` or `OpenLobotomy.*` package so that the local source overrides the broader `github` mapping, and invoke restore with `dotnet restore --configfile nuget.local.config`; do not commit machine-specific feed paths.
+- The local CI tool manifest pins `OpenLobotomy.Tooling` `0.1.0-preview.54` and CSharpier `1.3.0`. Run `dotnet tool restore` before `dotnet ci --check`.
 
 NuGet package publishing is planned for v1.0.0 but not yet implemented.
 
