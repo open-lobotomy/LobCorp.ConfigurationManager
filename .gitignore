@@ -336,6 +336,7 @@ external/
 
 # Local NuGet packages
 nupkg/
+nuget.local.config
 
 # Code coverage reports
 **/coverage.opencover.xml
